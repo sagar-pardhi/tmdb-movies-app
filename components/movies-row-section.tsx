@@ -5,12 +5,14 @@ import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
 type Props = {
+  title: string;
   movies: Movie[];
   onSeeAllPress?: () => void;
   onMoviePress?: (movie: Movie) => void;
 };
 
-export default function PopularMoviesSection({
+export default function MoviesRowSection({
+  title,
   movies,
   onSeeAllPress,
   onMoviePress,
@@ -18,8 +20,8 @@ export default function PopularMoviesSection({
   return (
     <View className="mt-6">
       {/* Header */}
-      <View className="flex-row justify-between items-center px-4 mb-4">
-        <Text className="text-xl font-bold text-white">Popular Movies</Text>
+      <View className="flex-row items-center justify-between px-4 mb-4">
+        <Text className="text-xl font-bold text-white">{title}</Text>
 
         <TouchableOpacity onPress={onSeeAllPress}>
           <Text className="text-sm font-semibold text-indigo-400">See All</Text>
@@ -51,8 +53,8 @@ export default function PopularMoviesSection({
                   className="w-full h-full"
                 />
 
-                {/* Rating Overlay */}
-                <View className="absolute right-2 bottom-2 flex-row items-center px-2 py-1 rounded-lg bg-black/60">
+                {/* Rating */}
+                <View className="absolute flex-row items-center px-2 py-1 rounded-lg bottom-2 right-2 bg-black/60">
                   <Text className="text-xs font-bold text-yellow-400">⭐</Text>
                   <Text className="ml-1 text-xs font-bold text-white">
                     {item.vote_average.toFixed(1)}

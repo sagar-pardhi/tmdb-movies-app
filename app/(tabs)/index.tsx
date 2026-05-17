@@ -1,8 +1,14 @@
 import HeroBanner from "@/components/hero-banner";
+import MoviesRowSection from "@/components/movies-row-section";
 import PaginationDots from "@/components/pagination-dots";
-import PopularMoviesSection from "@/components/popular-movies-section";
 import PopularMoviesSkeleton from "@/components/popular-movies-skeleton";
-import { getNowPlaying, getPopularMovies, Movie } from "@/services/tmdbService";
+import {
+  getNowPlaying,
+  getPopularMovies,
+  getTopRatedMovies,
+  getUpcomingMovies,
+  Movie,
+} from "@/services/tmdbService";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
@@ -10,6 +16,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -17,21 +24,25 @@ import {
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const BACKDROP_IMAGE_URL = "https://image.tmdb.org/t/p/w300/";
-
 const { width } = Dimensions.get("window");
 
 export default function Index() {
   const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[] | null>([]);
-  const [popularMovies, setPopularMovies] = useState<Movie[] | null>([]);
   const [loading, setLoading] = useState(true);
+  const [popularMovies, setPopularMovies] = useState<Movie[] | null>([]);
   const [loadingPopular, setLoadingPopular] = useState(true);
+  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
+  const [topRatedLoading, setTopRatedLoading] = useState(true);
+  const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
+  const [upcomingLoading, setUpcomingLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
       fetchNowPlayingMovies();
       fetchPopularMovies();
+      fetchTopRatedMovies();
+      fetchUpcomingMovies();
     }, []),
   );
 
@@ -58,6 +69,28 @@ export default function Index() {
     }
   };
 
+  const fetchTopRatedMovies = async () => {
+    try {
+      const data = await getTopRatedMovies();
+      setTopRatedMovies(data?.results ?? []);
+    } catch (error) {
+      console.error("Error fetching top rated movies", error);
+    } finally {
+      setTopRatedLoading(false);
+    }
+  };
+
+  const fetchUpcomingMovies = async () => {
+    try {
+      const data = await getUpcomingMovies();
+      setUpcomingMovies(data?.results ?? []);
+    } catch (error) {
+      console.error("Error fetching top rated movies", error);
+    } finally {
+      setUpcomingLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <View className="flex-1 bg-[#0B0B0F] justify-center items-center">
@@ -68,9 +101,9 @@ export default function Index() {
 
   return (
     <SafeAreaView className="flex-1 bg-primary">
-      <View className="px-5">
+      <ScrollView className="px-5">
         {/* Header */}
-        <View className="flex flex-row justify-between items-center mt-3">
+        <View className="flex flex-row items-center justify-between mt-3">
           <View>
             <Text className="text-2xl text-primary-text">Hi, Alex 👋</Text>
             <Text className="text-sm text-secondary-text">
@@ -78,7 +111,7 @@ export default function Index() {
             </Text>
           </View>
 
-          <View className="flex flex-row gap-2 items-center">
+          <View className="flex flex-row items-center gap-2">
             <Ionicons name="notifications-outline" size={25} color="#fff" />
             <Image
               source={require("../../assets/images/profile-image.png")}
@@ -88,7 +121,7 @@ export default function Index() {
         </View>
 
         {/* Search */}
-        <TouchableOpacity className="flex flex-row gap-3 items-center p-3 px-5 mt-5 rounded-2xl bg-secondary">
+        <TouchableOpacity className="flex flex-row items-center gap-3 p-3 px-5 mt-5 rounded-2xl bg-secondary">
           <Ionicons name="search" size={25} color="#fff" />
           <Text className="flex-1 text-sm text-primary-text">
             Search movies, shows, actors...
@@ -129,16 +162,46 @@ export default function Index() {
           />
         </View>
 
+        {/* Popular Movies */}
         {loadingPopular ? (
           <PopularMoviesSkeleton />
         ) : (
-          <PopularMoviesSection
+          <MoviesRowSection
+            title="Popular Movies"
             movies={popularMovies ?? []}
             onSeeAllPress={() => console.log("See All Popular")}
             onMoviePress={(movie) => console.log("Movie Click:", movie.title)}
           />
         )}
-      </View>
+
+        {/* Top Rated Movies */}
+        {topRatedLoading ? (
+          <PopularMoviesSkeleton />
+        ) : (
+          <MoviesRowSection
+            title="Top Rated"
+            movies={topRatedMovies}
+            onSeeAllPress={() => console.log("See All Top Rated")}
+            onMoviePress={(movie) =>
+              console.log("Top Rated Click:", movie.title)
+            }
+          />
+        )}
+
+        {/* Upcoming Movies */}
+        {upcomingLoading ? (
+          <PopularMoviesSkeleton />
+        ) : (
+          <MoviesRowSection
+            title="Upcoming Movies"
+            movies={upcomingMovies}
+            onSeeAllPress={() => console.log("See All Upcoming")}
+            onMoviePress={(movie) =>
+              console.log("Upcoming Click:", movie.title)
+            }
+          />
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }

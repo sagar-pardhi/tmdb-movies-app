@@ -88,5 +88,49 @@ export async function getPopularMovies(
   });
 }
 
+/**
+ * Types representing the TMDB "Top Rated" response.
+ */
+export interface TopRatedMoviesResponse {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
+/**
+ * Fetch the list of top-rated movies.
+ * @param page Optional page number for pagination (default: 1).
+ */
+export async function getTopRatedMovies(
+  page: number = 1,
+): Promise<TopRatedMoviesResponse> {
+  return tmdbGet<TopRatedMoviesResponse>("/movie/top_rated", {
+    page: page.toString(),
+  });
+}
+
+/**
+ * Types representing the TMDB "Upcoming" response.
+ */
+export interface UpcomingMoviesResponse {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
+/**
+ * Fetch the list of upcoming movies.
+ * @param page Optional page number for pagination (default: 1).
+ */
+export async function getUpcomingMovies(
+  page: number = 1,
+): Promise<UpcomingMoviesResponse> {
+  return tmdbGet<UpcomingMoviesResponse>("/movie/upcoming", {
+    page: page.toString(),
+  });
+}
+
 // Example usage (remove or comment out in production):
 // getPopularMovies().then(data => console.log(data)).catch(err => console.error(err));
