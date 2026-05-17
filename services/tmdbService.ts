@@ -64,5 +64,29 @@ export async function getNowPlaying(
   });
 }
 
+// Existing content continues unchanged up to line 69
+
+/**
+ * Types representing the TMDB "Popular" response.
+ */
+export interface PopularMoviesResponse {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
+/**
+ * Fetch the list of popular movies.
+ * @param page Optional page number for pagination (default: 1).
+ */
+export async function getPopularMovies(
+  page: number = 1,
+): Promise<PopularMoviesResponse> {
+  return tmdbGet<PopularMoviesResponse>("/movie/popular", {
+    page: page.toString(),
+  });
+}
+
 // Example usage (remove or comment out in production):
-// getNowPlaying().then(data => console.log(data)).catch(err => console.error(err));
+// getPopularMovies().then(data => console.log(data)).catch(err => console.error(err));

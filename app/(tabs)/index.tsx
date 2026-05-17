@@ -1,9 +1,11 @@
 import HeroBanner from "@/components/hero-banner";
 import PaginationDots from "@/components/pagination-dots";
-import { getNowPlaying, Movie } from "@/services/tmdbService";
+import PopularMoviesSection from "@/components/popular-movies-section";
+import PopularMoviesSkeleton from "@/components/popular-movies-skeleton";
+import { getNowPlaying, getPopularMovies, Movie } from "@/services/tmdbService";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -12,8 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSharedValue } from "react-native-reanimated";
-import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
+import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const BACKDROP_IMAGE_URL = "https://image.tmdb.org/t/p/w300/";
@@ -21,18 +22,16 @@ const BACKDROP_IMAGE_URL = "https://image.tmdb.org/t/p/w300/";
 const { width } = Dimensions.get("window");
 
 export default function Index() {
-  const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[] | null>(
-    null,
-  );
+  const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[] | null>([]);
+  const [popularMovies, setPopularMovies] = useState<Movie[] | null>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingPopular, setLoadingPopular] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const ref = useRef<ICarouselInstance>(null);
-  const progress = useSharedValue<number>(0);
 
   useFocusEffect(
     useCallback(() => {
       fetchNowPlayingMovies();
+      fetchPopularMovies();
     }, []),
   );
 
@@ -45,6 +44,17 @@ export default function Index() {
       console.error("Error fetching movies data", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPopularMovies = async () => {
+    try {
+      const data = await getPopularMovies();
+      setPopularMovies(data?.results ?? []);
+    } catch (error) {
+      console.error("Error fetching popular movies", error);
+    } finally {
+      setLoadingPopular(false);
     }
   };
 
@@ -89,7 +99,7 @@ export default function Index() {
           </TouchableOpacity>
         </TouchableOpacity>
 
-        <View className=" bg-[#0B0B0F] justify-center items-center ">
+        <View className=" bg-[#0B0B0F] justify-center items-center mt-3">
           <Carousel
             width={width * 0.92}
             height={300}
@@ -118,6 +128,16 @@ export default function Index() {
             total={nowPlayingMovies?.length ?? 0}
           />
         </View>
+
+        {loadingPopular ? (
+          <PopularMoviesSkeleton />
+        ) : (
+          <PopularMoviesSection
+            movies={popularMovies ?? []}
+            onSeeAllPress={() => console.log("See All Popular")}
+            onMoviePress={(movie) => console.log("Movie Click:", movie.title)}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
