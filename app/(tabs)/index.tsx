@@ -10,7 +10,7 @@ import {
   Movie,
 } from "@/services/tmdbService";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -103,7 +103,7 @@ export default function Index() {
     <SafeAreaView className="flex-1 bg-primary">
       <ScrollView className="px-5">
         {/* Header */}
-        <View className="flex flex-row items-center justify-between mt-3">
+        <View className="flex flex-row justify-between items-center mt-3">
           <View>
             <Text className="text-2xl text-primary-text">Hi, Alex 👋</Text>
             <Text className="text-sm text-secondary-text">
@@ -111,7 +111,7 @@ export default function Index() {
             </Text>
           </View>
 
-          <View className="flex flex-row items-center gap-2">
+          <View className="flex flex-row gap-2 items-center">
             <Ionicons name="notifications-outline" size={25} color="#fff" />
             <Image
               source={require("../../assets/images/profile-image.png")}
@@ -121,7 +121,7 @@ export default function Index() {
         </View>
 
         {/* Search */}
-        <TouchableOpacity className="flex flex-row items-center gap-3 p-3 px-5 mt-5 rounded-2xl bg-secondary">
+        <TouchableOpacity className="flex flex-row gap-3 items-center p-3 px-5 mt-5 rounded-2xl bg-secondary">
           <Ionicons name="search" size={25} color="#fff" />
           <Text className="flex-1 text-sm text-primary-text">
             Search movies, shows, actors...
@@ -150,7 +150,10 @@ export default function Index() {
             renderItem={({ item }) => (
               <HeroBanner
                 movie={item}
-                onWatchPress={(movie) => console.log("Watch:", movie.title)}
+                onWatchPress={(movie) => {
+                  console.log("Watch:", movie.title);
+                  router.push(`/movie/${movie.id}`);
+                }}
                 onAddPress={(movie) => console.log("Added:", movie.title)}
               />
             )}
@@ -170,7 +173,10 @@ export default function Index() {
             title="Popular Movies"
             movies={popularMovies ?? []}
             onSeeAllPress={() => console.log("See All Popular")}
-            onMoviePress={(movie) => console.log("Movie Click:", movie.title)}
+            onMoviePress={(movie) => {
+              console.log("Movie Click:", movie.title, movie.id);
+              router.push(`/movie/${movie.id}`);
+            }}
           />
         )}
 
@@ -182,9 +188,10 @@ export default function Index() {
             title="Top Rated"
             movies={topRatedMovies}
             onSeeAllPress={() => console.log("See All Top Rated")}
-            onMoviePress={(movie) =>
-              console.log("Top Rated Click:", movie.title)
-            }
+            onMoviePress={(movie) => {
+              console.log("Top Rated Click:", movie.title);
+              router.push(`/movie/${movie.id}`);
+            }}
           />
         )}
 
@@ -196,9 +203,10 @@ export default function Index() {
             title="Upcoming Movies"
             movies={upcomingMovies}
             onSeeAllPress={() => console.log("See All Upcoming")}
-            onMoviePress={(movie) =>
-              console.log("Upcoming Click:", movie.title)
-            }
+            onMoviePress={(movie) => {
+              console.log("Upcoming Click:", movie.title);
+              router.push(`/movie/${movie.id}`);
+            }}
           />
         )}
       </ScrollView>
