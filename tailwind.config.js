@@ -6,12 +6,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "bg-primary": "#0B0F1A",
-        "bg-secondary": "#141A2A",
-        "bg-bottom-navbar": "#0E1322",
+        primary: "#0B0F1A",
+        secondary: "#141A2A",
+        "bottom-navbar": "#0E1322",
         "primary-accent": "#6C5CE7",
-        "text-primary": "#FFFFFF",
-        "text-secondary": "#A0A6B8",
+        "primary-text": "#FFFFFF",
+        "secondary-text": "#A0A6B8",
+      },
+      fontFamily: {
+        sans: ["Inter_400Regular"],
+        medium: ["Inter_500Medium"],
+        bold: ["Inter_700Bold"],
       },
     },
   },
