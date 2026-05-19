@@ -1,4 +1,5 @@
 import HeroBanner from "@/components/hero-banner";
+import MoviesModal from "@/components/movies-modal";
 import MoviesRowSection from "@/components/movies-row-section";
 import PaginationDots from "@/components/pagination-dots";
 import PopularMoviesSkeleton from "@/components/popular-movies-skeleton";
@@ -36,6 +37,9 @@ export default function Index() {
   const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
   const [upcomingLoading, setUpcomingLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalFetcher, setModalFetcher] = useState<any>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -58,10 +62,11 @@ export default function Index() {
     }
   };
 
-  const fetchPopularMovies = async () => {
+  const fetchPopularMovies = async (page = 1) => {
     try {
-      const data = await getPopularMovies();
+      const data = await getPopularMovies(page);
       setPopularMovies(data?.results ?? []);
+      return data;
     } catch (error) {
       console.error("Error fetching popular movies", error);
     } finally {
@@ -69,10 +74,11 @@ export default function Index() {
     }
   };
 
-  const fetchTopRatedMovies = async () => {
+  const fetchTopRatedMovies = async (page = 1) => {
     try {
-      const data = await getTopRatedMovies();
+      const data = await getTopRatedMovies(page);
       setTopRatedMovies(data?.results ?? []);
+      return data;
     } catch (error) {
       console.error("Error fetching top rated movies", error);
     } finally {
@@ -80,15 +86,22 @@ export default function Index() {
     }
   };
 
-  const fetchUpcomingMovies = async () => {
+  const fetchUpcomingMovies = async (page = 1) => {
     try {
-      const data = await getUpcomingMovies();
+      const data = await getUpcomingMovies(page);
       setUpcomingMovies(data?.results ?? []);
+      return data;
     } catch (error) {
       console.error("Error fetching top rated movies", error);
     } finally {
       setUpcomingLoading(false);
     }
+  };
+
+  const openModal = (title: string, fetcher: any) => {
+    setModalTitle(title);
+    setModalFetcher(() => fetcher);
+    setModalVisible(true);
   };
 
   if (loading) {
@@ -172,7 +185,9 @@ export default function Index() {
           <MoviesRowSection
             title="Popular Movies"
             movies={popularMovies ?? []}
-            onSeeAllPress={() => console.log("See All Popular")}
+            onSeeAllPress={() =>
+              openModal("Popular Movies", fetchPopularMovies)
+            }
             onMoviePress={(movie) => {
               console.log("Movie Click:", movie.title, movie.id);
               router.push(`/movie/${movie.id}`);
@@ -187,7 +202,9 @@ export default function Index() {
           <MoviesRowSection
             title="Top Rated"
             movies={topRatedMovies}
-            onSeeAllPress={() => console.log("See All Top Rated")}
+            onSeeAllPress={() =>
+              openModal("Top Rated Movies", fetchTopRatedMovies)
+            }
             onMoviePress={(movie) => {
               console.log("Top Rated Click:", movie.title);
               router.push(`/movie/${movie.id}`);
@@ -202,11 +219,22 @@ export default function Index() {
           <MoviesRowSection
             title="Upcoming Movies"
             movies={upcomingMovies}
-            onSeeAllPress={() => console.log("See All Upcoming")}
+            onSeeAllPress={() =>
+              openModal("Upcoming Movies", fetchUpcomingMovies)
+            }
             onMoviePress={(movie) => {
               console.log("Upcoming Click:", movie.title);
               router.push(`/movie/${movie.id}`);
             }}
+          />
+        )}
+
+        {modalFetcher && (
+          <MoviesModal
+            visible={modalVisible}
+            title={modalTitle}
+            fetcher={modalFetcher}
+            onClose={() => setModalVisible(false)}
           />
         )}
       </ScrollView>
