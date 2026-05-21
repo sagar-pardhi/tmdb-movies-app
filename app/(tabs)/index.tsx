@@ -163,6 +163,7 @@ export default function Index() {
             renderItem={({ item }) => (
               <HeroBanner
                 movie={item}
+                badgeText="NEW RELEASE"
                 onWatchPress={(movie) => {
                   console.log("Watch:", movie.title);
                   router.push(`/movie/${movie.id}`);
