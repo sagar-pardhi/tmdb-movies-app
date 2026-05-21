@@ -7,11 +7,17 @@ const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/original";
 
 type Props = {
   movie: Movie;
+  badgeText?: string;
   onWatchPress?: (movie: Movie) => void;
   onAddPress?: (movie: Movie) => void;
 };
 
-export default function HeroBanner({ movie, onWatchPress, onAddPress }: Props) {
+export default function HeroBanner({
+  movie,
+  badgeText,
+  onWatchPress,
+  onAddPress,
+}: Props) {
   const imageUrl = `${TMDB_IMAGE_BASE}${movie.backdrop_path}`;
 
   return (
@@ -29,11 +35,13 @@ export default function HeroBanner({ movie, onWatchPress, onAddPress }: Props) {
           style={{ flex: 1, padding: 20, justifyContent: "center" }}
         >
           {/* Badge */}
-          <View className="self-start px-4 py-2 mb-3 rounded-full bg-indigo-500/25">
-            <Text className="text-xs font-bold tracking-wider text-indigo-200">
-              NEW RELEASE
-            </Text>
-          </View>
+          {badgeText ? (
+            <View className="self-start px-4 py-2 mb-3 rounded-full bg-indigo-500/25">
+              <Text className="text-xs font-bold tracking-wider text-indigo-200">
+                {badgeText}
+              </Text>
+            </View>
+          ) : null}
 
           {/* Title */}
           <Text

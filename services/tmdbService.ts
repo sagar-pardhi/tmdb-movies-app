@@ -246,5 +246,60 @@ export async function getSimilarMovies(
   return response.data;
 }
 
+export interface GenresResponse {
+  genres: Genre[];
+}
+
+/**
+ * Fetch the list of official genres for movies.
+ * @param language Optional language code (default: 'en').
+ */
+export async function getMovieGenres(
+  language: string = "en",
+): Promise<GenresResponse> {
+  const response = await apiClient.get<GenresResponse>("/genre/movie/list", {
+    params: { language },
+  });
+  return response.data;
+}
+
+/**
+ * Fetch the list of official genres for TV shows.
+ * @param language Optional language code (default: 'en').
+ */
+export async function getTvGenres(
+  language: string = "en",
+): Promise<GenresResponse> {
+  const response = await apiClient.get<GenresResponse>("/genre/tv/list", {
+    params: { language },
+  });
+  return response.data;
+}
+
+export interface TrendingMoviesResponse {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
+/**
+ * Fetch the list of trending movies.
+ * @param timeWindow The time window for trending content: 'day' or 'week' (default: 'day').
+ * @param page Optional page number for pagination (default: 1).
+ */
+export async function getTrendingMovies(
+  timeWindow: "day" | "week" = "day",
+  page: number = 1,
+): Promise<TrendingMoviesResponse> {
+  const response = await apiClient.get<TrendingMoviesResponse>(
+    `/trending/movie/${timeWindow}`,
+    {
+      params: { page: page.toString() },
+    },
+  );
+  return response.data;
+}
+
 // Example usage (remove or comment out in production):
 // getPopularMovies().then(data => console.log(data)).catch(err => console.error(err));
